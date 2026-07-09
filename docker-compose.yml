@@ -1,0 +1,70 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: meetreserve-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root123456}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-meet_reserve}
+      MYSQL_USER: ${MYSQL_USER:-meetreserve}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-meetreserve123}
+      TZ: Asia/Shanghai
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --default-authentication-plugin=mysql_native_password
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./backend/src/main/resources/db/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p$$MYSQL_ROOT_PASSWORD || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 30s
+    networks:
+      - meetreserve-net
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: meetreserve-backend
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      MYSQL_HOST: mysql
+      MYSQL_PORT: 3306
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-meet_reserve}
+      MYSQL_USER: ${MYSQL_USER:-meetreserve}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-meetreserve123}
+      JWT_SECRET: ${JWT_SECRET:-meet-reserve-secret-key-for-jwt-token-generation-2026-secure}
+      JWT_EXPIRATION: ${JWT_EXPIRATION:-86400000}
+      TZ: Asia/Shanghai
+    ports:
+      - "${BACKEND_PORT:-9000}:9000"
+    networks:
+      - meetreserve-net
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: meetreserve-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "${FRONTEND_PORT:-5000}:80"
+    networks:
+      - meetreserve-net
+
+volumes:
+  mysql_data:
+
+networks:
+  meetreserve-net:
+    driver: bridge

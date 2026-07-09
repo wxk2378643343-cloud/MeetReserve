@@ -1,0 +1,44 @@
+server:
+  port: 9000
+
+spring:
+  profiles:
+    active: dev
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: Asia/Shanghai
+    default-property-inclusion: non_null
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 5MB
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+  global-config:
+    db-config:
+      id-type: auto
+      logic-delete-field: deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+
+jwt:
+  secret: ${JWT_SECRET:meet-reserve-secret-key-for-jwt-token-generation-2026-secure}
+  expiration: ${JWT_EXPIRATION:86400000}
+
+meet-reserve:
+  schedule:
+    start-time: "08:00"
+    end-time: "20:00"
+    slot-minutes: 30
+  booking:
+    max-duration-hours: 4
+    advance-days: 30
+  user-import:
+    max-rows: 500
+    default-password: "123456"
+
+logging:
+  level:
+    com.meetreserve: debug
