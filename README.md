@@ -1,94 +1,34 @@
-# MeetReserve
+# MeetReserve 会议室预约系统
 
-会议室预约管理系统。支持日程网格视图、在线预约/修改/取消、空闲会议室智能推荐，以及管理员对会议室和用户的维护与 Excel 批量导入。
+![Java 8](https://img.shields.io/badge/Java%208-2563EB?style=flat-square)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-0F766E?style=flat-square)
+![React 18](https://img.shields.io/badge/React%2018-334155?style=flat-square)
+![MySQL](https://img.shields.io/badge/MySQL-B45309?style=flat-square)
 
-## 功能特性
+## 📌 项目简介
 
-- **日程视图**：横轴时间（08:00–20:00，30 分钟粒度）、纵轴会议室，甘特图式展示占用情况
-- **预约管理**：新建、修改、取消预约，自动冲突检测
-- **智能推荐**：按日期和时段推荐空闲会议室，无空闲时提示改时间
-- **我的预约**：个人预约列表，支持 Modal 快速新建
-- **管理员**：会议室 / 用户 CRUD，Excel 批量导入
-- **响应式布局**：适配桌面、平板、手机端
+用于维护会议室、预约时段和查看预约记录，同时提供 Excel 导入和管理操作。
 
-## 技术栈
+## 🏗️ 系统架构
 
-| 层级 | 技术 |
-|------|------|
-| 后端 | Spring Boot 2.7、MyBatis-Plus、Spring Security、JWT、MySQL 8、Apache POI |
-| 前端 | React 18、TypeScript、Vite、Ant Design 5、Redux Toolkit、dayjs |
-| 部署 | Docker、Docker Compose、Nginx |
+- React 提供预约界面，Spring Boot 实现登录、查阅和预约业务。
+- MySQL 持久化账号、会议室与预约信息，Docker 版由 Nginx 代理 API。
 
-## 项目结构
+## 📁 项目结构
 
-```
-MeetReserve/
-├── backend/                 # Spring Boot 后端
-│   ├── src/main/java/       # 业务代码
-│   ├── src/main/resources/  # 配置与数据库脚本
-│   └── Dockerfile
-├── frontend/                # React 前端
-│   ├── src/                 # 页面与组件
-│   ├── nginx.conf           # 生产环境 Nginx 配置
-│   └── Dockerfile
-├── docs/                    # 技术方案与界面设计文档
-├── deploy/                  # 部署说明
-├── docker-compose.yml       # Docker 一键编排
-└── .env.example             # 环境变量模板
-```
+| 路径 | 用途 |
+| --- | --- |
+| [`frontend`](frontend) | 预约和管理界面 |
+| [`backend`](backend) | 后端 API、业务和建表脚本 |
+| [`deploy`](deploy) | 部署说明 |
+| [`docs`](docs) | 界面与技术设计 |
+| [`docker-compose.yml`](docker-compose.yml) | 容器编排 |
 
-## 端口说明
+## 🚀 如何启动
 
-| 服务 | 端口 | 说明 |
-|------|------|------|
-| 前端 | 5000 | 开发 / Docker 对外访问 |
-| 后端 | 9000 | Spring Boot API |
-| MySQL | 3306 | 数据库（Docker 内网，不对外暴露） |
+按部署方式选择 Docker 或本地开发。首次启动需初始化 MySQL。
 
-## 快速开始（本地开发）
-
-### 环境要求
-
-- JDK 8+
-- Maven 3.6+
-- Node.js 18+
-- MySQL 8.0+
-
-### 1. 初始化数据库
-
-```bash
-mysql -u root -p < backend/src/main/resources/db/schema.sql
-```
-
-默认连接配置见 `backend/src/main/resources/application-dev.yml`（`root / 123456`）。
-
-### 2. 启动后端
-
-```bash
-cd backend
-mvn spring-boot:run
-```
-
-后端地址：http://localhost:9000
-
-### 3. 启动前端
-
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-前端地址：http://localhost:5000（开发模式自动代理 `/api` → `9000`）
-
-### 默认账号
-
-| 账号 | 密码 | 角色 |
-|------|------|------|
-| admin | admin123 | 管理员 |
-| user | user123 | 普通用户 |
-
-## Docker 部署（推荐）
+### Docker 部署（推荐）
 
 ```bash
 # 1. 复制并修改环境变量
@@ -113,6 +53,66 @@ docker compose up -d --build      # 更新后重新构建
 ```
 
 详细说明见 [deploy/README.md](./deploy/README.md)。
+
+### 快速开始（本地开发）
+
+#### 环境要求
+
+- JDK 8+
+- Maven 3.6+
+- Node.js 18+
+- MySQL 8.0+
+
+#### 1. 初始化数据库
+
+```bash
+mysql -u root -p < backend/src/main/resources/db/schema.sql
+```
+
+默认连接配置见 `backend/src/main/resources/application-dev.yml`（`root / 123456`）。
+
+#### 2. 启动后端
+
+```bash
+cd backend
+mvn spring-boot:run
+```
+
+后端地址：http://localhost:9000
+
+#### 3. 启动前端
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+前端地址：http://localhost:5000（开发模式自动代理 `/api` → `9000`）
+
+#### 默认账号
+
+| 账号 | 密码 | 角色 |
+|------|------|------|
+| admin | admin123 | 管理员 |
+| user | user123 | 普通用户 |
+
+## 功能特性
+
+- **日程视图**：横轴时间（08:00–20:00，30 分钟粒度）、纵轴会议室，甘特图式展示占用情况
+- **预约管理**：新建、修改、取消预约，自动冲突检测
+- **智能推荐**：按日期和时段推荐空闲会议室，无空闲时提示改时间
+- **我的预约**：个人预约列表，支持 Modal 快速新建
+- **管理员**：会议室 / 用户 CRUD，Excel 批量导入
+- **响应式布局**：适配桌面、平板、手机端
+
+## 端口说明
+
+| 服务 | 端口 | 说明 |
+|------|------|------|
+| 前端 | 5000 | 开发 / Docker 对外访问 |
+| 后端 | 9000 | Spring Boot API |
+| MySQL | 3306 | 数据库（Docker 内网，不对外暴露） |
 
 ## 主要页面
 
